@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking - Jayvee Hall</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="libs/html2canvas.min.js"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+
+<div class="form-container fade-in">
+  <h2>Online Reservation Form</h2>
+  <form id="bookingForm">
+    <input type="text" name="name" placeholder="Enter Name" required>
+    <input type="number" name="people" placeholder="Number of People" required>
+    <input type="date" name="date" required>
+
+    <label>Payment Method:</label>
+    <select name="payment" required>
+      <option value="">Select Payment</option>
+      <option value="Gcash - 09464766208 (E.C)">Gcash</option>
+      <option value="Seabank - 19169025449 (J.C)">Seabank</option>
+    </select>
+
+    <label>Send Payment Proof:</label>
+    <input type="file" name="proof" accept="image/*" required>
+
+    <button type="submit">Confirm Booking</button>
+  </form>
+</div>
+
+<script>
+handleBooking('bookingForm');
+</script>
+
+</body>
+</html>
