@@ -47,7 +47,7 @@ JayveeHall/ ├── index.html         # Landing Page ├── login.html    
 
 1. **Clone or download** the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/JayveeHall.git
+   git clone https://github.com/Jayveeeee07/JayveeHall.git
 
 2. Open the index.html file in a browser OR deploy using GitHub Pages.
 
