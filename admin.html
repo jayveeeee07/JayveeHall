@@ -6,38 +6,180 @@
 <title>Admin Panel - Jayvee Hall</title>
 <link rel="stylesheet" href="style.css">
 <script defer src="script.js"></script>
+<style>
+  body { 
+    padding: 20px; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f0f4f7, #d9e4ec);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.8s ease-in-out;
+  }
+  h2 { 
+    text-align: center; 
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #2c3e50;
+  }
+  .section-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px;
+  }
+  .admin-card {
+    flex: 1 1 350px;
+    max-width: 500px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    overflow-wrap: break-word;
+    animation: slideUp 0.8s ease forwards;
+    opacity: 0;
+  }
+  .admin-card h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #34495e;
+    font-size: 20px;
+  }
+  ul { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0;
+  }
+  li { 
+    background: #f7f9fa; 
+    margin: 10px 0; 
+    padding: 12px 15px; 
+    border-radius: 8px; 
+    font-size: 14px;
+    word-wrap: break-word;
+    line-height: 1.4;
+    transform: translateY(10px);
+    opacity: 0;
+    animation: fadeSlide 0.6s ease forwards;
+  }
+  li:nth-child(odd){ background: #eef3f6; }
+  li:hover { 
+    background: #d9edf7; 
+    transform: scale(1.02);
+    transition: 0.3s;
+  }
+  .proof-link { 
+    color: #007bff; 
+    text-decoration: underline; 
+    cursor: pointer; 
+    word-break: break-all;
+  }
+  @media(max-width: 768px){
+    h2 { font-size: 20px; }
+    .admin-card h3 { font-size: 18px; }
+    li { font-size: 13px; }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeSlide {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+</style>
 </head>
-<body class="fade-in">
+<body>
 
-<h2>Admin Panel</h2>
+<h2>Admin Panel - Jayvee Hall of Mansion</h2>
 
-<h3>Registered Users</h3>
-<ul id="userList"></ul>
+<div class="section-container">
+  <!-- Registered Users -->
+  <div class="admin-card">
+    <h3>Registered Users</h3>
+    <ul id="userList"></ul>
+  </div>
 
-<h3>Bookings</h3>
-<ul id="bookingList"></ul>
+  <!-- Bookings -->
+  <div class="admin-card">
+    <h3>Bookings</h3>
+    <ul id="bookingList"></ul>
+  </div>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-  const userList = document.getElementById("userList");
-  const bookingList = document.getElementById("bookingList");
-
+  // Deduplicate users by username
+  const uniqueUsers = [];
+  const userSet = new Set();
   users.forEach(u => {
-    const li = document.createElement("li");
-    li.textContent = `Username: ${u.username}`;
-    userList.appendChild(li);
+    if (!userSet.has(u.username)) {
+      uniqueUsers.push(u);
+      userSet.add(u.username);
+    }
   });
 
+  // Deduplicate bookings by (date + room)
+  const uniqueBookings = [];
+  const bookingSet = new Set();
   bookings.forEach(b => {
-    const li = document.createElement("li");
-    li.textContent = `Name: ${b.name} | People: ${b.people} | Date: ${b.date} | Payment: ${b.payment} | Proof: ${b.proofName}`;
-    bookingList.appendChild(li);
+    const key = (b.date || "no-date") + "-" + (b.room || "no-room");
+    if (!bookingSet.has(key)) {
+      uniqueBookings.push(b);
+      bookingSet.add(key);
+    }
   });
+
+  // Render Users
+  const userList = document.getElementById("userList");
+  if(uniqueUsers.length === 0){
+    userList.innerHTML = "<li>No registered users yet.</li>";
+  } else {
+    uniqueUsers.forEach((u,i) => {
+      const li = document.createElement("li");
+      li.style.animationDelay = `${i * 0.1}s`;
+      li.textContent = `Username: ${u.username} | Email: ${u.email || 'N/A'} | Contact: ${u.phone || 'N/A'}`;
+      userList.appendChild(li);
+    });
+  }
+
+  // Render Bookings
+  const bookingList = document.getElementById("bookingList");
+  if(uniqueBookings.length === 0){
+    bookingList.innerHTML = "<li>No bookings yet.</li>";
+  } else {
+    uniqueBookings.forEach((b,i) => {
+      const li = document.createElement("li");
+      li.style.animationDelay = `${i * 0.1}s`;
+      li.innerHTML = `
+        <strong>Name:</strong> ${b.name} <br>
+        <strong>Room:</strong> ${b.room || 'N/A'} <br>
+        <strong>People:</strong> ${b.people} <br>
+        <strong>Date:</strong> ${b.date} <br>
+        <strong>Payment:</strong> ${b.payment} <br>
+        <strong>Proof:</strong> ${b.proofName ? `<a class="proof-link" href="${b.proof}" target="_blank">${b.proofName}</a>` : 'None'}
+      `;
+      bookingList.appendChild(li);
+    });
+  }
+
+  // Save cleaned data back to localStorage
+  localStorage.setItem("users", JSON.stringify(uniqueUsers));
+  localStorage.setItem("bookings", JSON.stringify(uniqueBookings));
 });
 </script>
 
 </body>
-</html>
+  </html>
