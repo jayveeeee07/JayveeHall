@@ -1,39 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Booking - Jayvee Hall</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="libs/html2canvas.min.js"></script>
-  <script defer src="script.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Reservation - Jayvee Hall</title>
+<link rel="stylesheet" href="style.css">
+<script src="html2canvas.min.js"></script>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    background: linear-gradient(135deg, #f0f4f7, #d9e4ec);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .booking-container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    animation: fadeIn 0.8s ease;
+  }
+  h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  input, select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  input[type="file"] {
+    padding: 5px;
+  }
+  button {
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #3498db;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #2980b9;
+  }
+  .receipt-box {
+    display: none;
+    margin-top: 20px;
+    background: #f7f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+  }
+  .payment-info {
+    font-size: 14px;
+    margin: 10px 0;
+    padding: 10px;
+    background: #eef3f6;
+    border-radius: 8px;
+  }
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+</style>
 </head>
 <body>
 
-<div class="form-container fade-in">
-  <h2>Online Reservation Form</h2>
+<div class="booking-container fade-in">
+  <h2>Online Reservation</h2>
   <form id="bookingForm">
-    <input type="text" name="name" placeholder="Enter Name" required>
-    <input type="number" name="people" placeholder="Number of People" required>
+    <input type="text" name="name" placeholder="Full Name" required>
+    <input type="number" name="people" placeholder="Number of People" min="1" required>
+    <select name="room" required>
+      <option value="">Select Room</option>
+      <option>Deluxe Room</option>
+      <option>Executive Suite</option>
+      <option>Family Room</option>
+      <option>Presidential Suite</option>
+    </select>
     <input type="date" name="date" required>
 
-    <label>Payment Method:</label>
+    <div class="payment-info">
+      <p><strong>Online Payment Methods:</strong></p>
+      <p>GCash - <b>09464766208 (E.C)</b></p>
+      <p>Seabank - <b>19169025449 (J.C)</b></p>
+    </div>
+
     <select name="payment" required>
-      <option value="">Select Payment</option>
-      <option value="Gcash - 09464766208 (E.C)">Gcash</option>
-      <option value="Seabank - 19169025449 (J.C)">Seabank</option>
+      <option value="">Select Payment Method</option>
+      <option>GCash</option>
+      <option>Seabank</option>
+      <option>Pay on Arrival</option>
     </select>
 
     <label>Send Payment Proof:</label>
-    <input type="file" name="proof" accept="image/*" required>
+    <input type="file" name="proof" accept="image/*">
 
     <button type="submit">Confirm Booking</button>
   </form>
+
+  <!-- Receipt Box -->
+  <div class="receipt-box" id="receiptBox">
+    <h3>Booking Details</h3>
+    <p id="receiptDetails"></p>
+    <button id="downloadReceipt">Download Receipt</button>
+  </div>
 </div>
 
 <script>
-handleBooking('bookingForm');
+document.addEventListener("DOMContentLoaded", function(){
+  const form = document.getElementById("bookingForm");
+  const receiptBox = document.getElementById("receiptBox");
+  const receiptDetails = document.getElementById("receiptDetails");
+  const downloadBtn = document.getElementById("downloadReceipt");
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const name = form.name.value.trim();
+    const people = form.people.value;
+    const room = form.room.value;
+    const date = form.date.value;
+    const payment = form.payment.value;
+    const proofFile = form.proof.files[0];
+
+    if(!name || !people || !room || !date || !payment) return;
+
+    let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+
+    // Prevent duplicate date for same room
+    const duplicate = bookings.find(b => b.date === date && b.room === room);
+    if(duplicate){
+      alert("This room is already booked for the selected date!");
+      return;
+    }
+
+    let proofName = '';
+    let proofURL = '';
+    if(proofFile){
+      proofName = proofFile.name;
+      proofURL = URL.createObjectURL(proofFile);
+    }
+
+    const bookingData = { name, people, room, date, payment, proofName, proof: proofURL };
+    bookings.push(bookingData);
+    localStorage.setItem("bookings", JSON.stringify(bookings));
+
+    // Show receipt
+    receiptDetails.innerHTML = `
+      <strong>Name:</strong> ${name} <br>
+      <strong>People:</strong> ${people} <br>
+      <strong>Room:</strong> ${room} <br>
+      <strong>Date:</strong> ${date} <br>
+      <strong>Payment:</strong> ${payment} <br>
+      <strong>Proof:</strong> ${proofName || 'None'}
+    `;
+    receiptBox.style.display = 'block';
+
+    // Scroll to receipt
+    receiptBox.scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Download Receipt as PNG
+  downloadBtn.addEventListener("click", function(){
+    html2canvas(receiptBox).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'Booking_Receipt.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  });
+});
 </script>
 
 </body>
-</html>
+  </html>
