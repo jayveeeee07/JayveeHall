@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Jayvee Hall of Mansion</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+<body>
+
+  <div class="home-container fade-in">
+    <h2>Welcome to Jayvee Hall of Mansion</h2>
+    <p>Experience luxury and comfort in the heart of Malungon, Sarangani. Explore our elegant rooms and choose the perfect stay for you.</p>
+
+    <div class="room-grid">
+      <div class="room-card">
+        <img src="assets/room1.jpg" alt="Deluxe Room">
+        <h3>Room 101 - Deluxe Room</h3>
+        <p>₱3,500 / night</p>
+        <div class="card-buttons">
+          <button onclick="showRoomDetails(0)">View Details</button>
+          <button onclick="window.location.href='booking.html'">Book Now</button>
+        </div>
+      </div>
+      <div class="room-card">
+        <img src="assets/room2.jpg" alt="Executive Suite">
+        <h3>Room 102 - Executive Suite</h3>
+        <p>₱5,200 / night</p>
+        <div class="card-buttons">
+          <button onclick="showRoomDetails(1)">View Details</button>
+          <button onclick="window.location.href='booking.html'">Book Now</button>
+        </div>
+      </div>
+      <div class="room-card">
+        <img src="assets/room3.jpg" alt="Family Room">
+        <h3>Room 103 - Family Room</h3>
+        <p>₱4,000 / night</p>
+        <div class="card-buttons">
+          <button onclick="showRoomDetails(2)">View Details</button>
+          <button onclick="window.location.href='booking.html'">Book Now</button>
+        </div>
+      </div>
+      <div class="room-card">
+        <img src="assets/room4.jpg" alt="Presidential Suite">
+        <h3>Room 104 - Presidential Suite</h3>
+        <p>₱8,000 / night</p>
+        <div class="card-buttons">
+          <button onclick="showRoomDetails(3)">View Details</button>
+          <button onclick="window.location.href='booking.html'">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="roomModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeRoomModal()">&times;</span>
+      <h3 id="roomTitle"></h3>
+      <p id="roomDesc"></p>
+      <p id="roomPrice"></p>
+      <button onclick="window.location.href='booking.html'">Interested</button>
+      <button onclick="closeRoomModal()">Not Interested</button>
+    </div>
+  </div>
+
+</body>
+  </html>
